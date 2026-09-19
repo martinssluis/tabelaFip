@@ -1,9 +1,11 @@
 package com.martinsluis.tabelaFip.Principal;
 
 import com.martinsluis.tabelaFip.config.FipeClientConfig;
-
+import com.martinsluis.tabelaFip.dto.MarcaDTO;
+import com.martinsluis.tabelaFip.model.Marca;
 import com.martinsluis.tabelaFip.service.ConverteDados;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class Principal {
@@ -48,13 +50,23 @@ public class Principal {
             }
 
             var urlMarcas = BASE_URL + tipoVeiculo + "/marcas";
-        System.out.println(urlMarcas);
-
             var jsonTipoVeiculo = fipeClientConfig.getData(urlMarcas);
-        System.out.println("jsonTipoVeiculo: "+ jsonTipoVeiculo);
 
 
+        List<MarcaDTO> marcaDTO = conversor.obterListaDeDados(jsonTipoVeiculo, MarcaDTO.class);
+        marcaDTO.forEach(marca -> System.out.println(marca.codigo() + ": " + marca.nome()));
 
+        System.out.println("Selecione a marca do carro de acordo com o id: ");
+        int escolhaMarca = scanner.nextInt();
+
+        MarcaDTO marcaEscolhida = marcaDTO.stream()
+                .filter(m -> m.codigo() == escolhaMarca)
+                .findFirst()
+                .orElse(null);
+
+        Marca marca = new Marca(marcaEscolhida.codigo(), marcaEscolhida.nome());
+
+        System.out.println(marca);
 
         }
 
