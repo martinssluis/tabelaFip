@@ -68,6 +68,13 @@ public class Principal {
 
         System.out.println(marca);
 
+        var urlModelos = urlMarcas+"/"+marca.getCodigo()+"/modelos";
+        var jsonModelos = fipeClientConfig.getData(urlModelos);
+
+        System.out.println(jsonModelos);
+
+
+
         }
 
         // caso o usuário escreva uma opção inválida, deve lançar exceção
