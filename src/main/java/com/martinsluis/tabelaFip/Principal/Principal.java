@@ -2,6 +2,8 @@ package com.martinsluis.tabelaFip.Principal;
 
 import com.martinsluis.tabelaFip.config.FipeClientConfig;
 import com.martinsluis.tabelaFip.dto.MarcaDTO;
+import com.martinsluis.tabelaFip.dto.ModeloDTO;
+import com.martinsluis.tabelaFip.dto.ModeloResponseDTO;
 import com.martinsluis.tabelaFip.model.Marca;
 import com.martinsluis.tabelaFip.service.ConverteDados;
 
@@ -54,7 +56,7 @@ public class Principal {
 
 
         List<MarcaDTO> marcaDTO = conversor.obterListaDeDados(jsonTipoVeiculo, MarcaDTO.class);
-        marcaDTO.forEach(marca -> System.out.println(marca.codigo() + ": " + marca.nome()));
+        marcaDTO.forEach(marca -> System.out.println("Cód: " + marca.codigo() + " Nome Marca: " + marca.nome()));
 
         System.out.println("Selecione a marca do carro de acordo com o id: ");
         int escolhaMarca = scanner.nextInt();
@@ -73,14 +75,43 @@ public class Principal {
 
         System.out.println(jsonModelos);
 
+        ModeloResponseDTO responseModelos = conversor.obterDados(jsonModelos, ModeloResponseDTO.class);
+        List<ModeloDTO> modeloDTO = responseModelos.modelos();
 
+        modeloDTO.forEach(modelo -> System.out.println("Cód: " + modelo.codigo() + " Nome Modelo: " + modelo.codigo()));
 
+        //limpar o buffer
+        scanner.nextLine();
+
+        System.out.println("Digite um trecho do nome do veículo para consulta: ");
+        String modeloDesejado = scanner.nextLine();
+
+        List<ModeloDTO> modelosEncontrados = modeloDTO.stream()
+                .filter(m -> m.descricao().toLowerCase().contains(modeloDesejado.toLowerCase()))
+                .toList();
+
+        modelosEncontrados.forEach(modelosEncontrado ->
+                System.out.println("Cód: " + modelosEncontrado.codigo() + " Descrição: " + modelosEncontrado.descricao()));
         }
 
         // caso o usuário escreva uma opção inválida, deve lançar exceção
 
         //* Escolher marca do carro pelo código
-        //* Digitar trecho do nome do carro para consulta
+        //* Digitar trecho do descricao do carro para consulta
         //* Digitar código do modelo para consultar valores
-        //* Mostrar os veículos de a cordo com o ano
+        //https://parallelum.com.br/fipe/api/v1/carros/marcas/21/modelos/545/anos
+            // endpoint acima lista os anos do modelo
+        //Listar modelos pelo ano : https://parallelum.com.br/fipe/api/v1/carros/marcas/21/modelos/545/anos/2003-1
+//        {
+//            "TipoVeiculo": 1,
+//                "Valor": "R$ 15.768,00",
+//                "Marca": "Fiat",
+//                "Modelo": "Palio Weekend Adventure 1.6 8V/16V",
+//                "AnoModelo": 2003,
+//                "Combustivel": "Gasolina",
+//                "CodigoFipe": "001111-8",
+//                "MesReferencia": "setembro de 2026",
+//                "SiglaCombustivel": "G"
+//        }
+
     }
