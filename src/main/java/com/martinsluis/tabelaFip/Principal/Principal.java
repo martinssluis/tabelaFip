@@ -109,34 +109,10 @@ public class Principal {
 
         listaAnos.forEach(ano-> {
             String jsonVeiculo = fipeClientConfig.getData(anosUrl+"/"+ano);
-            System.out.println(jsonVeiculo); // dá certo
+            System.out.println(jsonVeiculo);
             VeiculoDTO veiculoDTO = conversor.obterDados(jsonVeiculo, VeiculoDTO.class);
             System.out.println(veiculoDTO);
         });
 
-
-
-        //TODO: analisar solução abaixo
-        //modelos/{id}/anos para retornar os anos
-            // uma opção é pegar cada um dos anos e guardar em uma lista, com isso fazer a requisição para
-            //modelos/{id}/anos para retornar os anos/{ano-numero}
         }
-
-        // caso o usuário escreva uma opção inválida, deve lançar exceção
-
-        //https://parallelum.com.br/fipe/api/v1/carros/marcas/21/modelos/545/anos
-            // endpoint acima lista os anos do modelo
-        //Listar modelos pelo ano : https://parallelum.com.br/fipe/api/v1/carros/marcas/21/modelos/545/anos/2003-1
-//        {
-//            "TipoVeiculo": 1,
-//                "Valor": "R$ 15.768,00",
-//                "Marca": "Fiat",
-//                "Modelo": "Palio Weekend Adventure 1.6 8V/16V",
-//                "AnoModelo": 2003,
-//                "Combustivel": "Gasolina",
-//                "CodigoFipe": "001111-8",
-//                "MesReferencia": "setembro de 2026",
-//                "SiglaCombustivel": "G"
-//        }
-
     }
