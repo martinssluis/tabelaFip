@@ -1,14 +1,13 @@
 package com.martinsluis.tabelaFip.Principal;
 
 import com.martinsluis.tabelaFip.config.FipeClientConfig;
-import com.martinsluis.tabelaFip.dto.MarcaDTO;
-import com.martinsluis.tabelaFip.dto.ModeloDTO;
-import com.martinsluis.tabelaFip.dto.ModeloResponseDTO;
+import com.martinsluis.tabelaFip.dto.*;
 import com.martinsluis.tabelaFip.model.Marca;
 import com.martinsluis.tabelaFip.service.ConverteDados;
 
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Principal {
     private Scanner scanner = new Scanner(System.in);
@@ -68,17 +67,13 @@ public class Principal {
 
         Marca marca = new Marca(marcaEscolhida.codigo(), marcaEscolhida.nome());
 
-        System.out.println(marca);
-
         var urlModelos = urlMarcas+"/"+marca.getCodigo()+"/modelos";
         var jsonModelos = fipeClientConfig.getData(urlModelos);
-
-        System.out.println(jsonModelos);
 
         ModeloResponseDTO responseModelos = conversor.obterDados(jsonModelos, ModeloResponseDTO.class);
         List<ModeloDTO> modeloDTO = responseModelos.modelos();
 
-        modeloDTO.forEach(modelo -> System.out.println("Cód: " + modelo.codigo() + " Nome Modelo: " + modelo.codigo()));
+        modeloDTO.forEach(modelo -> System.out.println("Cód: " + modelo.codigo() + " Nome Modelo: " + modelo.descricao()));
 
         //limpar o buffer
         scanner.nextLine();
@@ -92,13 +87,40 @@ public class Principal {
 
         modelosEncontrados.forEach(modelosEncontrado ->
                 System.out.println("Cód: " + modelosEncontrado.codigo() + " Descrição: " + modelosEncontrado.descricao()));
+
+        System.out.println("Selecione o modelo desejado pelo id: ");
+        int modeloEscolhido = scanner.nextInt();
+
+        ModeloDTO modelo = modelosEncontrados.stream()
+                .filter(m -> m.codigo() == modeloEscolhido)
+                .findFirst()
+                .orElse(null);
+
+        System.out.println("Cód: " + modelo.codigo() + " Descrição: " + modelo.descricao());
+
+        var anosUrl = urlModelos +"/"+ modelo.codigo() +"/anos";
+        var anos = fipeClientConfig.getData(anosUrl);
+
+        List<AnoDTO> anoDTO = conversor.obterListaDeDados(anos, AnoDTO.class);
+
+        List<String> listaAnos = anoDTO.stream()
+                        .map(AnoDTO::codigo)
+                        .toList();
+
+        System.out.println(listaAnos);
+
+
+//        AnoResponseDTO anoResponseDTO = conversor.obterDados(anos, AnoResponseDTO.class);
+//        List<String> listaDeAnos = List.of(anoResponseDTO.codigo());
+
+        //TODO: analisar solução abaixo
+        //modelos/{id}/anos para retornar os anos
+            // uma opção é pegar cada um dos anos e guardar em uma lista, com isso fazer a requisição para
+            //modelos/{id}/anos para retornar os anos/{ano-numero}
         }
 
         // caso o usuário escreva uma opção inválida, deve lançar exceção
 
-        //* Escolher marca do carro pelo código
-        //* Digitar trecho do descricao do carro para consulta
-        //* Digitar código do modelo para consultar valores
         //https://parallelum.com.br/fipe/api/v1/carros/marcas/21/modelos/545/anos
             // endpoint acima lista os anos do modelo
         //Listar modelos pelo ano : https://parallelum.com.br/fipe/api/v1/carros/marcas/21/modelos/545/anos/2003-1
