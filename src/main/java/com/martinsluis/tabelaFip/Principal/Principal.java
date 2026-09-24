@@ -2,12 +2,10 @@ package com.martinsluis.tabelaFip.Principal;
 
 import com.martinsluis.tabelaFip.config.FipeClientConfig;
 import com.martinsluis.tabelaFip.dto.*;
-import com.martinsluis.tabelaFip.model.Marca;
 import com.martinsluis.tabelaFip.service.ConverteDados;
 
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 public class Principal {
     private Scanner scanner = new Scanner(System.in);
@@ -65,9 +63,7 @@ public class Principal {
                 .findFirst()
                 .orElse(null);
 
-        Marca marca = new Marca(marcaEscolhida.codigo(), marcaEscolhida.nome());
-
-        var urlModelos = urlMarcas+"/"+marca.getCodigo()+"/modelos";
+        var urlModelos = urlMarcas+"/"+marcaEscolhida.codigo()+"/modelos";
         var jsonModelos = fipeClientConfig.getData(urlModelos);
 
         ModeloResponseDTO responseModelos = conversor.obterDados(jsonModelos, ModeloResponseDTO.class);
@@ -109,9 +105,6 @@ public class Principal {
 
         System.out.println(listaAnos);
 
-
-//        AnoResponseDTO anoResponseDTO = conversor.obterDados(anos, AnoResponseDTO.class);
-//        List<String> listaDeAnos = List.of(anoResponseDTO.codigo());
 
         //TODO: analisar solução abaixo
         //modelos/{id}/anos para retornar os anos
