@@ -105,6 +105,16 @@ public class Principal {
 
         System.out.println(listaAnos);
 
+        System.out.println("Todos os valores por ano");
+
+        listaAnos.forEach(ano-> {
+            String jsonVeiculo = fipeClientConfig.getData(anosUrl+"/"+ano);
+            System.out.println(jsonVeiculo); // dá certo
+            VeiculoDTO veiculoDTO = conversor.obterDados(jsonVeiculo, VeiculoDTO.class);
+            System.out.println(veiculoDTO);
+        });
+
+
 
         //TODO: analisar solução abaixo
         //modelos/{id}/anos para retornar os anos
