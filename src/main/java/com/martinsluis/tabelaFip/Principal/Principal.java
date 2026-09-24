@@ -76,43 +76,53 @@ public class Principal {
 
         System.out.println("Digite um trecho do nome do veículo para consulta: ");
         String modeloDesejado = scanner.nextLine();
-
         List<ModeloDTO> modelosEncontrados = modeloDTO.stream()
                 .filter(m -> m.descricao().toLowerCase().contains(modeloDesejado.toLowerCase()))
                 .toList();
 
-        modelosEncontrados.forEach(modelosEncontrado ->
-                System.out.println("Cód: " + modelosEncontrado.codigo() + " Descrição: " + modelosEncontrado.descricao()));
+        if(modelosEncontrados.contains(modeloDesejado)) {
 
-        System.out.println("Selecione o modelo desejado pelo id: ");
-        int modeloEscolhido = scanner.nextInt();
 
-        ModeloDTO modelo = modelosEncontrados.stream()
-                .filter(m -> m.codigo() == modeloEscolhido)
-                .findFirst()
-                .orElse(null);
+            modelosEncontrados.forEach(modelosEncontrado ->
+                    System.out.println("Cód: " + modelosEncontrado.codigo() + " Descrição: " + modelosEncontrado.descricao()));
 
-        System.out.println("Cód: " + modelo.codigo() + " Descrição: " + modelo.descricao());
+            System.out.println("Selecione o modelo desejado pelo id: ");
+            int modeloEscolhido = scanner.nextInt();
 
-        var anosUrl = urlModelos +"/"+ modelo.codigo() +"/anos";
-        var anos = fipeClientConfig.getData(anosUrl);
+            ModeloDTO modelo = modelosEncontrados.stream()
+                    .filter(m -> m.codigo() == modeloEscolhido)
+                    .findFirst()
+                    .orElse(null);
 
-        List<AnoDTO> anoDTO = conversor.obterListaDeDados(anos, AnoDTO.class);
+            System.out.println("Cód: " + modelo.codigo() + " Descrição: " + modelo.descricao());
 
-        List<String> listaAnos = anoDTO.stream()
-                        .map(AnoDTO::codigo)
-                        .toList();
+            var anosUrl = urlModelos + "/" + modelo.codigo() + "/anos";
+            var anos = fipeClientConfig.getData(anosUrl);
 
-        System.out.println(listaAnos);
+            List<AnoDTO> anoDTO = conversor.obterListaDeDados(anos, AnoDTO.class);
 
-        System.out.println("Todos os valores por ano");
+            List<String> listaAnos = anoDTO.stream()
+                    .map(AnoDTO::codigo)
+                    .toList();
 
-        listaAnos.forEach(ano-> {
-            String jsonVeiculo = fipeClientConfig.getData(anosUrl+"/"+ano);
-            System.out.println(jsonVeiculo);
-            VeiculoDTO veiculoDTO = conversor.obterDados(jsonVeiculo, VeiculoDTO.class);
-            System.out.println(veiculoDTO);
-        });
+            System.out.println(listaAnos);
+
+            System.out.println("Todos os valores por ano");
+
+            listaAnos.forEach(ano -> {
+                String jsonVeiculo = fipeClientConfig.getData(anosUrl + "/" + ano);
+                System.out.println(jsonVeiculo);
+                VeiculoDTO veiculoDTO = conversor.obterDados(jsonVeiculo, VeiculoDTO.class);
+                System.out.println(veiculoDTO);
+            });
+        } else{
+            System.out.println("Modelo de carro não encontrado");
+        }
 
         }
+
+        //TODO: listar exceptions para serem tratadas
+        // opções - MismatchedInputExcetion
+        // idMarca - NullPointerException
+        // se eu colocar um valor como XXXXXXXXXXXX ele passa. Devemos fazer uma validação para isso
     }
