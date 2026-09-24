@@ -16,40 +16,40 @@ public class Principal {
     private final String BASE_URL = "https://parallelum.com.br/fipe/api/v1/";
 
 
-    public void exibirMenu(){
-                 System.out.print("""
-                        ******OPÇÕES******
-                    
-                        (1) Carro
-                        (2) Moto
-                        (3) Caminhão
-                    
-                         Digite uma das opções para consultar valores: 
-                    """);
-            int escolhaTipoVeiculo = scanner.nextInt();
+    public void exibirMenu() {
+        System.out.print("""
+                    ******OPÇÕES******
+                
+                    (1) Carro
+                    (2) Moto
+                    (3) Caminhão
+                
+                     Digite uma das opções para consultar valores: 
+                """);
+        int escolhaTipoVeiculo = scanner.nextInt();
 
-            switch (escolhaTipoVeiculo) {
-                case 1:
-                    System.out.println("Carro");
-                    tipoVeiculo = "carros";
-                    break;
+        switch (escolhaTipoVeiculo) {
+            case 1:
+                System.out.println("Carro");
+                tipoVeiculo = "carros";
+                break;
 
-                case 2:
-                    System.out.println("Moto");
-                    tipoVeiculo = "motos";
-                    break;
+            case 2:
+                System.out.println("Moto");
+                tipoVeiculo = "motos";
+                break;
 
-                case 3:
-                    System.out.println("Caminhão");
-                    tipoVeiculo = "caminhoes";
-                    break;
+            case 3:
+                System.out.println("Caminhão");
+                tipoVeiculo = "caminhoes";
+                break;
 
-                default:
-                    System.out.println("Opção inválida");
-            }
+            default:
+                System.out.println("Opção inválida");
+        }
 
-            var urlMarcas = BASE_URL + tipoVeiculo + "/marcas";
-            var jsonTipoVeiculo = fipeClientConfig.getData(urlMarcas);
+        var urlMarcas = BASE_URL + tipoVeiculo + "/marcas";
+        var jsonTipoVeiculo = fipeClientConfig.getData(urlMarcas);
 
 
         List<MarcaDTO> marcaDTO = conversor.obterListaDeDados(jsonTipoVeiculo, MarcaDTO.class);
@@ -63,7 +63,7 @@ public class Principal {
                 .findFirst()
                 .orElse(null);
 
-        var urlModelos = urlMarcas+"/"+marcaEscolhida.codigo()+"/modelos";
+        var urlModelos = urlMarcas + "/" + marcaEscolhida.codigo() + "/modelos";
         var jsonModelos = fipeClientConfig.getData(urlModelos);
 
         ModeloResponseDTO responseModelos = conversor.obterDados(jsonModelos, ModeloResponseDTO.class);
@@ -80,8 +80,9 @@ public class Principal {
                 .filter(m -> m.descricao().toLowerCase().contains(modeloDesejado.toLowerCase()))
                 .toList();
 
-        if(modelosEncontrados.contains(modeloDesejado)) {
-
+        if (modelosEncontrados.isEmpty()) {
+            System.out.println("Nenhum modelo encontrado na busca!");
+        } else {
 
             modelosEncontrados.forEach(modelosEncontrado ->
                     System.out.println("Cód: " + modelosEncontrado.codigo() + " Descrição: " + modelosEncontrado.descricao()));
@@ -115,14 +116,11 @@ public class Principal {
                 VeiculoDTO veiculoDTO = conversor.obterDados(jsonVeiculo, VeiculoDTO.class);
                 System.out.println(veiculoDTO);
             });
-        } else{
-            System.out.println("Modelo de carro não encontrado");
         }
-
-        }
-
-        //TODO: listar exceptions para serem tratadas
-        // opções - MismatchedInputExcetion
-        // idMarca - NullPointerException
-        // se eu colocar um valor como XXXXXXXXXXXX ele passa. Devemos fazer uma validação para isso
     }
+}
+
+//TODO: listar exceptions para serem tratadas
+// opções - MismatchedInputExcetion
+// idMarca - NullPointerException
+// se eu colocar um valor como XXXXXXXXXXXX ele passa. Devemos fazer uma validação para isso
