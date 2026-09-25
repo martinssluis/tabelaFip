@@ -1,10 +1,10 @@
 package com.martinsluis.tabelaFip.Principal;
 
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.martinsluis.tabelaFip.config.FipeClientConfig;
 import com.martinsluis.tabelaFip.dto.*;
 import com.martinsluis.tabelaFip.exception.OpcaoInvalidaException;
 import com.martinsluis.tabelaFip.exception.TipoDivergenteException;
+import com.martinsluis.tabelaFip.exception.ValorNaoEncontradoOuNuloException;
 import com.martinsluis.tabelaFip.service.ConverteDados;
 
 import java.util.InputMismatchException;
@@ -67,7 +67,7 @@ public class Principal {
             MarcaDTO marcaEscolhida = marcaDTO.stream()
                     .filter(m -> m.codigo() == escolhaMarca)
                     .findFirst()
-                    .orElse(null);
+                    .orElseThrow(() -> new ValorNaoEncontradoOuNuloException());
 
             var urlModelos = urlMarcas + "/" + marcaEscolhida.codigo() + "/modelos";
             var jsonModelos = fipeClientConfig.getData(urlModelos);
@@ -99,7 +99,7 @@ public class Principal {
                 ModeloDTO modelo = modelosEncontrados.stream()
                         .filter(m -> m.codigo() == modeloEscolhido)
                         .findFirst()
-                        .orElse(null);
+                        .orElseThrow(() -> new ValorNaoEncontradoOuNuloException());
 
                 System.out.println("Cód: " + modelo.codigo() + " Descrição: " + modelo.descricao());
 
@@ -118,25 +118,24 @@ public class Principal {
 
                 listaAnos.forEach(ano -> {
                     String jsonVeiculo = fipeClientConfig.getData(anosUrl + "/" + ano);
-                    System.out.println(jsonVeiculo);
                     VeiculoDTO veiculoDTO = conversor.obterDados(jsonVeiculo, VeiculoDTO.class);
                     System.out.println(veiculoDTO);
                 });
             }
-        } catch (InputMismatchException | TipoDivergenteException e){
-            System.out.println("O valor passado possui uma tipagem diferente do esperado");
-        } catch (OpcaoInvalidaException e){
+
+            scanner.close();
+        } catch (NullPointerException | ValorNaoEncontradoOuNuloException e) {
             System.out.println(e.getMessage());
+        } catch (OpcaoInvalidaException e) {
+            System.out.println(e.getMessage());
+        } catch (InputMismatchException | TipoDivergenteException e) {
+            System.out.println("O valor passado possui uma tipagem diferente do esperado");
+            /*caso na hora de testar usemos um numero muito grande para simular um id invalido/null ele cairá aqui
+            Ex: 9999999999999999999
+            esse valor deixa de ser um inteiro e passa a ser um Long ou até um BigInteger
+            */
         }
 
         System.out.println("Projeto encerrado");
     }
 }
-
-
-
-//TODO: listar exceptions para serem tratadas
-// opções - MismatchedInputExcetion
-// idMarca - NullPointerException
-// se eu colocar um valor como 1 ele passa, mas ao digitar 545 gera NullPointerException
-// id do modelo - InputMismatchException
