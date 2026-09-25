@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.martinsluis.tabelaFip.config.FipeClientConfig;
 import com.martinsluis.tabelaFip.dto.*;
 import com.martinsluis.tabelaFip.exception.OpcaoInvalidaException;
+import com.martinsluis.tabelaFip.exception.TipoDivergenteException;
 import com.martinsluis.tabelaFip.service.ConverteDados;
 
 import java.util.InputMismatchException;
@@ -29,9 +30,9 @@ public class Principal {
                 
                      Digite uma das opções para consultar valores: 
                 """);
-        int escolhaTipoVeiculo = scanner.nextInt();
-
         try {
+        Integer escolhaTipoVeiculo = scanner.nextInt();
+
 
             switch (escolhaTipoVeiculo) {
                 case 1:
@@ -122,6 +123,8 @@ public class Principal {
                     System.out.println(veiculoDTO);
                 });
             }
+        } catch (InputMismatchException | TipoDivergenteException e){
+            System.out.println("O valor passado possui uma tipagem diferente do esperado");
         } catch (OpcaoInvalidaException e){
             System.out.println(e.getMessage());
         }
